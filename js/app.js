@@ -288,7 +288,7 @@ const App = (() => {
         <div class="riw-item"><div><b>${esc(h.judul)}</b><div class="muted">${tgl(h.tgl)} · ${h.benar}/${h.total} · ${h.mode}</div></div>
         <div class="skor ${h.skor >= 70 ? "baik" : h.skor >= 50 ? "cukup" : "kurang"}">${h.skor}</div></div>`).join("") || '<p class="muted">Belum ada riwayat.</p>'}</div>`;
     const b = document.getElementById("hapus");
-    if (b) b.addEventListener("click", () => { if (confirm("Hapus semua riwayat?")) { Store.clearHistory(); route(); } });
+    if (b) b.addEventListener("click", async () => { if (await showConfirm("Hapus riwayat?", "Semua riwayat tes akan dihapus dan tidak bisa dikembalikan.", "Ya, hapus")) { Store.clearHistory(); route(); } });
   }
   function vSalah() {
     const v = document.getElementById("view");

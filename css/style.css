@@ -190,3 +190,28 @@ details ul { margin: 8px 0; padding-left: 20px; font-size: 14px; }
   .bottomnav { position: sticky; top: 64px; max-width: 720px; margin: 0 auto 20px; border: 1px solid var(--line); border-radius: 12px; }
   .grid2 { grid-template-columns: 1fr 1fr; }
 }
+
+/* modal konfirmasi custom (pengganti confirm() bawaan) */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(7, 18, 38, .55);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px; z-index: 100;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--card); border-radius: 16px; width: 100%; max-width: 380px;
+  padding: 22px; box-shadow: 0 20px 60px rgba(7, 18, 38, .35);
+  animation: modalPop .18s ease-out; overflow: hidden; position: relative;
+}
+@keyframes modalPop {
+  from { transform: translateY(12px) scale(.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.modal-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--navy), var(--gold));
+}
+.modal-title { font-size: 18px; color: var(--navy); margin: 4px 0 8px; }
+.modal-msg { color: var(--text); margin: 0 0 18px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-actions .btn { flex: 1; padding: 11px; font-size: 15px; }

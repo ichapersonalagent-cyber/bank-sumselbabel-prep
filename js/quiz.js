@@ -124,12 +124,12 @@ const Quiz = (() => {
       <button class="btn primary" data-act="finish">Selesaikan</button>
     </div>`;
     v.querySelectorAll(".opsi").forEach(b => b.addEventListener("click", () => answer(Number(b.dataset.k))));
-    v.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
+    v.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", async () => {
       const a = b.dataset.act;
       if (a === "prev") { if (S.idx > 0) { S.idx--; persist(); render(); } }
-      if (a === "next") { if (S.idx < S.order.length - 1) { S.idx++; persist(); render(); } else finish(false); }
+      if (a === "next") { if (S.idx < S.order.length - 1) { S.idx++; persist(); render(); } else await finish(false); }
       if (a === "flag") { Store.toggleFav(s.id); persist(); render(); }
-      if (a === "finish") finish(false);
+      if (a === "finish") await finish(false);
     }));
     window.scrollTo(0, 0);
   }
@@ -142,12 +142,15 @@ const Quiz = (() => {
     persist(); render();
   }
 
-  function finish(auto) {
+  async function finish(auto) {
     stopTimer();
     if (!S) return;
     if (!auto && S.mode === "simulasi") {
       const un = S.order.filter(id => S.answers[id] === undefined).length;
-      if (un > 0 && !confirm(`Masih ada ${un} soal belum dijawab. Selesaikan sekarang?`)) { render(); return; }
+      if (un > 0) {
+        const ya = await showConfirm("Selesaikan simulasi?", `Masih ada ${un} soal belum dijawab. Selesaikan sekarang?`, "Ya, selesaikan");
+        if (!ya) { render(); return; }
+      }
     }
     const rincian = S.order.map(id => {
       const s = soalById(id);
