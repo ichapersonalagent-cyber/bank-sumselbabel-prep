@@ -35,7 +35,7 @@ const Quiz = (() => {
       mode: config.mode, judul: config.judul || "Kuis",
       ids: soal.map(s => s.id),
       order: shuffle(soal.map(s => s.id)),
-      answers: {}, revealed: {}, flagged: {},
+      answers: {}, revealed: {},
       idx: 0,
       durasiDetik: (config.durasiMenit || 0) * 60,
       endTs: config.durasiMenit ? Date.now() + config.durasiMenit * 60000 : null,
@@ -100,7 +100,8 @@ const Quiz = (() => {
         <button class="btn" data-act="next">${i + 1 < total ? "Soal berikutnya →" : "Lihat hasil →"}</button>
       </div>`;
     }
-    const flagged = S.flagged[s.id] ? " aktif" : "";
+    const isFav = Store.favs().includes(s.id);
+    const flagged = isFav ? " aktif" : "";
     v.innerHTML = `
     <div class="quiz-head">
       <div><b>${esc(S.judul)}</b><div class="muted">Soal ${i + 1} dari ${total} · ${isLat ? "Mode latihan" : "Mode simulasi"}</div></div>
@@ -115,7 +116,7 @@ const Quiz = (() => {
     </div>
     <div class="quiz-nav">
       <button class="btn ghost" data-act="prev" ${i === 0 ? "disabled" : ""}>← Sebelumnya</button>
-      <button class="btn ghost flag${flagged}" data-act="flag">${S.flagged[s.id] ? "★ Ditandai" : "☆ Tandai"}</button>
+      <button class="btn ghost flag${flagged}" data-act="flag">${isFav ? "★ Ditandai" : "☆ Tandai"}</button>
       ${(!isLat || revealed) ? `<button class="btn ghost" data-act="next" ${i + 1 >= total ? "disabled" : ""}>Berikutnya →</button>` : ""}
     </div>
     <div class="quiz-foot">
@@ -127,7 +128,7 @@ const Quiz = (() => {
       const a = b.dataset.act;
       if (a === "prev") { if (S.idx > 0) { S.idx--; persist(); render(); } }
       if (a === "next") { if (S.idx < S.order.length - 1) { S.idx++; persist(); render(); } else finish(false); }
-      if (a === "flag") { S.flagged[s.id] = !S.flagged[s.id]; if (!S.flagged[s.id]) delete S.flagged[s.id]; persist(); render(); }
+      if (a === "flag") { Store.toggleFav(s.id); persist(); render(); }
       if (a === "finish") finish(false);
     }));
     window.scrollTo(0, 0);
@@ -154,7 +155,7 @@ const Quiz = (() => {
     });
     const benar = rincian.filter(r => r.benar).length;
     const total = rincian.length;
-    const skor = Math.round((benar / total) * 100);
+    const skor = total ? Math.round((benar / total) * 100) : 0;
     const durasiDetik = Math.round((Date.now() - S.startTs) / 1000);
     const perKategori = {};
     rincian.forEach(r => {
